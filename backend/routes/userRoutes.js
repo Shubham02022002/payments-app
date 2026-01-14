@@ -4,23 +4,33 @@ const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const authenticateUser = require("../auth/userAuth");
+const {
+  signinSchema,
+  editProfileSchema,
+  signupSchema,
+} = require("../schema/userSchema");
+const { validateInputs } = require("../validations/userInputValidations");
+const Account = require("../models/accountModel");
 
-const userSchema = z.object({
-  username: z.string().min(3),
-  password: z.string().min(7),
-});
-
-const validInputs = (req, res, next) => {};
-
-router.post("/signup", async (req, res) => {
-  const { username, password } = req.body;
+router.post("/signup", validateInputs(signupSchema), async (req, res) => {
+  const { username, password, firstName, lastName } = req.userDetails;
   try {
-    const validInputs = userSchema.safeParse({ username, password });
-    if (!validInputs.success) {
-      return res.status(400).json({ message: "Invalid inputs" });
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(411).json({ message: "User already exits" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ username, password: hashedPassword });
+    const newUser = await User.create({
+      username,
+      firstName,
+      lastName,
+      password: hashedPassword,
+    });
+
+    await Account.create({
+      userId: newUser._id,
+      balance: Math.floor(Math.random() * 9999 + 1),
+    });
     const token = jwt.sign({ userId: newUser._id }, process.env.SECRET, {
       expiresIn: "1h",
     });
@@ -32,17 +42,14 @@ router.post("/signup", async (req, res) => {
     if (error.code == 1100) {
       return res.status(409).json({ message: "Username already exists" });
     }
+    console.log("ctrl here");
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
-router.post("/signin", async (req, res) => {
-  const { username, password } = req.body;
+router.post("/signin", validateInputs(signinSchema), async (req, res) => {
+  const { username, password } = req.userDetails;
   try {
-    const validInputs = userSchema.safeParse({ username, password });
-    if (!validInputs.success) {
-      return res.status(400).json({ message: "Invalid inputs" });
-    }
     const isUser = await User.findOne({ username });
     const isValidPassword = await bcrypt.compare(password, isUser.password);
     if (isUser && isValidPassword) {
@@ -61,25 +68,46 @@ router.post("/signin", async (req, res) => {
   }
 });
 
-router.post("/editProfile", authenticateUser, async (req, res) => {
-  const { newUserName, newPassword } = req.body;
-  try {
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    const updatedUser = await User.findByIdAndUpdate(
-      req.id,
-      {
-        username: newUserName,
-        password: hashedPassword,
-      },
-      {
-        new: true,
+router.post(
+  "/editProfile",
+  authenticateUser,
+  validateInputs(editProfileSchema),
+  async (req, res) => {
+    try {
+      const updatedData = {};
+      const { username, password, firstName, lastName } = req.userDetails;
+
+      if (username) updatedData.username = username;
+      if (password) {
+        updatedData.password = await bcrypt.hash(password, 10);
       }
-    );
-    res.status(200).json({ message: "Details updated", id: updatedUser._id });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal Server Error" });
+      if (firstName) updatedData.firstName = firstName;
+      if (lastName) updatedData.lastName = lastName;
+
+      const updatedUser = await User.findByIdAndUpdate(req.id, updatedData, {
+        new: true,
+        runValidators: true,
+      });
+      return res.status(200).json({
+        message: "Details updated",
+        user: updatedUser,
+      });
+    } catch (error) {
+      if (error.code === 11000) {
+        return res.status(409).json({ message: "Username already exists" });
+      }
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
   }
+);
+
+router.get("/bulk", authenticateUser, async (req, res) => {
+  const searchKeyword = req.query.filter;
+  const regex = new RegExp(searchKeyword, "i");
+  const users = await User.find({
+    $or: [{ username: regex }, { firstName: regex }, { lastName: regex }],
+  }).exec();
+  return res.status(200).json({ users });
 });
 
 module.exports = router;
