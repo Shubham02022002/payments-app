@@ -107,7 +107,14 @@ router.get("/bulk", authenticateUser, async (req, res) => {
   const users = await User.find({
     $or: [{ username: regex }, { firstName: regex }, { lastName: regex }],
   }).exec();
-  return res.status(200).json({ users });
+  return res.status(200).json({
+    users: users.map((user) => ({
+      _id: user._id,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    })),
+  });
 });
 
 module.exports = router;

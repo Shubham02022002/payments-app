@@ -18,8 +18,14 @@ const editProfileSchema = signupSchema
     message: "At least one field must be updated",
   });
 
+const transferSchema = z.object({
+  to: z.string(),
+  ammount: z.number(),
+});
+
 module.exports = {
   signupSchema,
   signinSchema,
   editProfileSchema,
+  transferSchema,
 };
