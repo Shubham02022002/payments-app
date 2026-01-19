@@ -1,13 +1,12 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import Signup from "./components/Signup";
-import Signin from "./components/Signin";
-import Transfer from "./components/Transfer";
-import Dashboard from "./components/Dashboard";
+import Signup from "./Pages/Signup";
+import Signin from "./Pages/Signin";
+import Transfer from "./Pages/Transfer";
+import Dashboard from "./Pages/Dashboard";
 const App = () => {
   return (
     <div>
-      <div>Payment App</div>
       <Routes>
         <Route path="/" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
