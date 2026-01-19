@@ -1,9 +1,9 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import Signup from "./Pages/Signup";
-import Signin from "./Pages/Signin";
-import Transfer from "./Pages/Transfer";
-import Dashboard from "./Pages/Dashboard";
+import Signup from "./pages/Signup";
+import Transfer from "./pages/Transfer";
+import Dashboard from "./pages/Dashboard";
+import Signin from "./pages/Signin";
 const App = () => {
   return (
     <div>
