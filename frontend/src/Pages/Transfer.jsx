@@ -44,14 +44,14 @@ const Transfer = () => {
                     "http://localhost:3000/api/v1/account/transfer",
                     {
                       to: reciversId,
-                      ammount,
+                      ammount: Number(ammount),
                     },
                     {
                       headers: {
                         "Content-Type": "application/json",
                         Authorization: localStorage.getItem("token"),
                       },
-                    }
+                    },
                   );
                 }}
               >

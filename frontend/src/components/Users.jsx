@@ -23,7 +23,6 @@ const Users = () => {
         if (!resp.data) {
           throw new Error("Internal server error");
         }
-        console.log(resp.data.users);
         setUsers(resp.data.users);
       } catch (error) {
         setError(error.message);
