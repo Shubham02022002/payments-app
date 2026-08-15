@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
+import api from "../api/axios";
 
 const SigninCard = () => {
   const [firstName, setFirstName] = useState("");
@@ -44,13 +45,10 @@ const SigninCard = () => {
             type="button"
             className="w-full h-9 bg-[#18181b] text-white text-sm font-semibold rounded-md mt-1"
             onClick={async () => {
-              const resposne = await axios.post(
-                "http://localhost:3000/api/v1/user/login",
-                {
-                  email,
-                  password,
-                },
-              );
+              const resposne = await api.post("/api/v1/user/login", {
+                email,
+                password,
+              });
               localStorage.setItem("token", response.data.token);
             }}
           >

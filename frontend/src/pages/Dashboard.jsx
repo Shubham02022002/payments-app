@@ -11,7 +11,7 @@ const Dashboard = () => {
   useEffect(() => {
     const getUserDetails = async () => {
       try {
-        const resp = await axios.get("http://localhost:3000/api/v1/user/me", {
+        const resp = await api.get("/api/v1/user/me", {
           headers: {
             "Content-Type": "application/json",
             Authorization: localStorage.getItem("token"),

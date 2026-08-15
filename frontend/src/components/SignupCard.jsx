@@ -83,16 +83,13 @@ const SignupCard = () => {
             type="button"
             className="w-full h-9 bg-[#18181b] text-white text-sm font-semibold rounded-md mt-1"
             onClick={async () => {
-              const response = await axios.post(
-                "http://localhost:3000/api/v1/user/signup",
-                {
-                  firstName,
-                  lastName,
-                  userName,
-                  email,
-                  password,
-                },
-              );
+              const response = await api.post("/api/v1/user/signup", {
+                firstName,
+                lastName,
+                userName,
+                email,
+                password,
+              });
               localStorage.setItem("token", response.data.token);
               navigate("/dashboard");
             }}
