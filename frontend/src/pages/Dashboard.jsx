@@ -3,7 +3,7 @@ import Appbar from "../components/Appbar";
 import Balance from "../components/Balance";
 import Users from "../components/Users";
 import axios from "axios";
-
+import api from "../api/axios";
 const Dashboard = () => {
   const [userDetails, setUserDetails] = useState("");
   const [error, setError] = useState(null);

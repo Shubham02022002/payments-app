@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import api from "../api/axios";
 const Transfer = () => {
   const [data] = useSearchParams();
   const reciversId = data.get("id");

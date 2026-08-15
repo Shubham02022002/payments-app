@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Button from "./Button";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import api from "../api/axios";
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [filter, seFilter] = useState("");
