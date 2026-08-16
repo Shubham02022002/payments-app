@@ -2,38 +2,66 @@ import React, { useEffect, useState } from "react";
 import Appbar from "../components/Appbar";
 import Balance from "../components/Balance";
 import Users from "../components/Users";
-import axios from "axios";
 import api from "../api/axios";
+
 const Dashboard = () => {
-  const [userDetails, setUserDetails] = useState("");
-  const [error, setError] = useState(null);
+  const [userDetails, setUserDetails] = useState(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const getUserDetails = async () => {
       try {
-        const resp = await api.get("/api/v1/user/me", {
+        const response = await api.get("/api/v1/user/me", {
           headers: {
-            "Content-Type": "application/json",
             Authorization: localStorage.getItem("token"),
           },
         });
 
-        if (!resp.data) {
-          throw new Error("Internal server error");
-        }
-        setUserDetails(resp.data);
+        setUserDetails(response.data);
       } catch (error) {
-        setError(error.message);
+        console.error(error);
+        setError("Unable to load your account.");
       }
     };
+
     getUserDetails();
   }, []);
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#f5f8ff]">
+        <Appbar />
+
+        <div className="flex items-center justify-center min-h-[80vh] px-4">
+          <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+            <p className="text-red-500 text-sm">{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!userDetails) {
+    return (
+      <div className="min-h-screen bg-[#f5f8ff]">
+        <Appbar />
+
+        <div className="flex items-center justify-center min-h-[80vh]">
+          <p className="text-sm text-slate-500">Loading your account...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <Appbar username={userDetails.username || ""} />
-      <Balance value={userDetails.balance} />
-      <Users />
+    <div className="min-h-screen bg-[#f5f8ff]">
+      <Appbar username={userDetails.userName} />
+
+      <main className="max-w-5xl mx-auto px-4 py-6">
+        <Balance value={userDetails.balance} />
+
+        <Users />
+      </main>
     </div>
   );
 };

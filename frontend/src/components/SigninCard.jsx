@@ -133,7 +133,7 @@ const SigninCard = () => {
                   Don't have an account?{" "}
                   <button
                     type="button"
-                    onClick={() => navigate("/signup")}
+                    onClick={() => navigate("/")}
                     className="text-blue-600 font-semibold"
                   >
                     Sign up

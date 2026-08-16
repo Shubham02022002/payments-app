@@ -127,7 +127,7 @@ userRouter.get("/bulk", authMiddleware, async (req, res) => {
     user: users
       .filter((u) => u.email !== req.user.email)
       .map((user) => ({
-        username: user.username,
+        username: user.userName,
         firstName: user.firstName,
         lastName: user.lastName,
         _id: user._id,
